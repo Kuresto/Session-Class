@@ -119,7 +119,7 @@ class Session
     /**
      * Renews the session when the given time is not up and there is activity on the site.
      */
-    public function renew() {
+    public function renewTime() {
         $_SESSION['session_start'] = $this->newTime();
     }
 
