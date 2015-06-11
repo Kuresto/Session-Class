@@ -200,6 +200,20 @@ class Session extends SessionHandler
      * Destroys the session
      */
     public function end() {
+
+        if($this->isSecure) {
+            $_SESSION = [];
+            setcookie(
+                $this->name,
+                '',
+                time() - 42000,
+                $this->cookie['path'],
+                $this->cookie['domain'],
+                $this->cookie['secure'],
+                $this->cookie['httponly']
+            );
+        }
+
         session_destroy();
     }
 
