@@ -73,6 +73,22 @@ class Session extends SessionHandler
         return parent::write($id, mcrypt_encrypt(MCRYPT_3DES, $this->key, $data, MCRYPT_MODE_ECB));
     }
 
+    public function isFingerprint() {
+        $hash = md5($_SERVER['HTTP_USER_AGENT'] . (ip2long($_SERVER['REMOTE_ADDR']) & ip2long('255.255.0.0')));
+
+        if(isset($_SESSION['_fingerprint'])) {
+            return $_SESSION['_fingerprint'] === $hash;
+        }
+
+        $_SESSION['_fingerprint'] = $hash;
+
+        return true;
+    }
+
+    public function isValid() {
+        return !$this->isExpired() && $this->isFingerprint();
+    }
+
     /**
      * Destructor.
      */
@@ -99,8 +115,7 @@ class Session extends SessionHandler
     public function isRegistered() {
         if(!empty($_SESSION['session_id'])) {
             return true;
-        }
-        else {
+        }else {
             return false;
         }
     }
@@ -122,7 +137,21 @@ class Session extends SessionHandler
      * @return bool
      */
     public function get($key) {
-        return isset($_SESSION[$key]) ? $_SESSION[$key] : false;
+        $parsed = explode('.', $key);
+
+        $result = $_SESSION;
+
+        while($parsed) {
+            $next = array_shift($parsed);
+
+            if(isset($result[$next])) {
+                $result = $result[$next];
+            }else {
+                return false;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -151,8 +180,7 @@ class Session extends SessionHandler
     public function isExpired() {
         if($_SESSION['session_start'] < $this->timeNow()) {
             return true;
-        }
-        else {
+        }else {
             return false;
         }
     }
