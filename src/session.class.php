@@ -78,6 +78,7 @@ class Session
      * Retrieve value stored in session by key.
      *
      * @var mixed
+     * @return bool
      */
     public function get($key) {
         return isset($_SESSION[$key]) ? $_SESSION[$key] : false;
@@ -123,9 +124,7 @@ class Session
     }
 
     /**
-     * Returns the current time.
-     *
-     * @return unix timestamp
+     * @return int
      */
     private function timeNow() {
         $currentHour = date('H');
@@ -139,9 +138,7 @@ class Session
     }
 
     /**
-     * Generates new time.
-     *
-     * @return unix timestamp
+     * @return int
      */
     private function newTime() {
         $currentHour = date('H');
@@ -155,10 +152,9 @@ class Session
     }
 
     /**
-     * Destroys the session.
+     * Destroys the session
      */
     public function end() {
         session_destroy();
-        $_SESSION = [];
     }
 }
