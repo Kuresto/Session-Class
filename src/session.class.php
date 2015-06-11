@@ -50,13 +50,7 @@ class Session extends SessionHandler
         if(!empty($name))
             $this->name = "SecureSession";
 
-        $this->cookie += [
-            'lifetime' => 0,
-            'path'     => ini_get('session.cookie_path'),
-            'domain'   => ini_get('session.cookie_domain'),
-            'secure'   => isset($_SERVER['HTTPS']),
-            'httponly' => true
-        ];
+        $this->cookie += ['lifetime' => 0, 'path' => ini_get('session.cookie_path'), 'domain' => ini_get('session.cookie_domain'), 'secure' => isset($_SERVER['HTTPS']), 'httponly' => true];
 
         $this->secureSessionSetup();
 
@@ -68,13 +62,15 @@ class Session extends SessionHandler
 
         session_name($this->name);
 
-        session_set_cookie_params(
-            $this->cookie['lifetime'],
-            $this->cookie['path'],
-            $this->cookie['domain'],
-            $this->cookie['secure'],
-            $this->cookie['httponly']
-        );
+        session_set_cookie_params($this->cookie['lifetime'], $this->cookie['path'], $this->cookie['domain'], $this->cookie['secure'], $this->cookie['httponly']);
+    }
+
+    public function read($id) {
+        return mcrypt_decrypt(MCRYPT_3DES, $this->key, parent::read($id), MCRYPT_MODE_ECB);
+    }
+
+    public function write($id, $data) {
+        return parent::write($id, mcrypt_encrypt(MCRYPT_3DES, $this->key, $data, MCRYPT_MODE_ECB));
     }
 
     /**
@@ -203,15 +199,7 @@ class Session extends SessionHandler
 
         if($this->isSecure) {
             $_SESSION = [];
-            setcookie(
-                $this->name,
-                '',
-                time() - 42000,
-                $this->cookie['path'],
-                $this->cookie['domain'],
-                $this->cookie['secure'],
-                $this->cookie['httponly']
-            );
+            setcookie($this->name, '', time() - 42000, $this->cookie['path'], $this->cookie['domain'], $this->cookie['secure'], $this->cookie['httponly']);
         }
 
         session_destroy();
