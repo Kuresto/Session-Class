@@ -157,4 +157,8 @@ class Session
     public function end() {
         session_destroy();
     }
+
+    public function dump() {
+        var_dump($this->getSession());
+    }
 }
