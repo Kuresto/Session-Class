@@ -127,7 +127,21 @@ class Session extends SessionHandler
      * @param mixed $value
      */
     public function set($key, $value) {
-        $_SESSION[$key] = $value;
+        $parsed = explode('.', $key);
+
+        $session =& $_SESSION;
+
+        while(count($parsed) > 1) {
+            $next = array_shift($parsed);
+
+            if(!isset($session[$next]) || !is_array($session[$next])) {
+                $session[$next] = [];
+            }
+
+            $session =& $session[$next];
+        }
+
+        $session[array_shift($parsed)] = $value;
     }
 
     /**
