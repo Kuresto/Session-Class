@@ -28,7 +28,9 @@ class Session extends SessionHandler
 {
     protected $key;
     protected $name;
-    protected $cookie = [];
+    protected $cookie;
+
+    private $isSecure = false;
 
     /**
      * Constructor.
@@ -36,6 +38,43 @@ class Session extends SessionHandler
     public function __construct() {
         if(session_id() == '')
             session_start();
+    }
+
+    public function secureSession($key = null, $name = null) {
+
+        $this->isSecure = true;
+
+        if(!empty($key))
+            $this->key = 'KnF5fRpMNUJ461NCoPpcUO7c9rNn060hVPmXIoVZ';
+
+        if(!empty($name))
+            $this->name = "SecureSession";
+
+        $this->cookie += [
+            'lifetime' => 0,
+            'path'     => ini_get('session.cookie_path'),
+            'domain'   => ini_get('session.cookie_domain'),
+            'secure'   => isset($_SERVER['HTTPS']),
+            'httponly' => true
+        ];
+
+        $this->secureSessionSetup();
+
+    }
+
+    private function secureSessionSetup() {
+        ini_set('session.use_cookies', 1);
+        ini_set('session.use_only_cookies', 1);
+
+        session_name($this->name);
+
+        session_set_cookie_params(
+            $this->cookie['lifetime'],
+            $this->cookie['path'],
+            $this->cookie['domain'],
+            $this->cookie['secure'],
+            $this->cookie['httponly']
+        );
     }
 
     /**
