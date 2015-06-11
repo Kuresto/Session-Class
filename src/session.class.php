@@ -161,4 +161,8 @@ class Session
     public function dump() {
         var_dump($this->getSession());
     }
+
+    public function regenerate($destroy = false) {
+        session_regenerate_id($destroy);
+    }
 }
