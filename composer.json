@@ -1,21 +1,27 @@
 {
-  "name": "rcastera/session",
-  "description": "Session Class",
-  "keywords": ["session", "php"],
-  "homepage": "http://www.richardcastera.com",
+  "name": "kuresto/session",
+  "description": "Session handler class",
+  "keywords": [
+    "session",
+    "php"
+  ],
   "license": "MIT",
   "authors": [
-      {
-        "name": "Richard Castera",
-        "email": "richard.castera@gmail.com"
-      }
+    {
+      "name": "Nilton Teixeira",
+      "email" : "niltonfrederico@gmail.com"
+    },
+    {
+      "name": "Richard Castera",
+      "email": "richard.castera@gmail.com"
+    }
   ],
   "require": {
-      "php": ">=5.3.0"
+    "php": ">=5.3.0"
   },
   "autoload": {
-      "psr-0": {
-        "rcastera\\Browser\\Session": "src"
-      }
+    "psr-0": {
+      "kuresto\\Session": "src"
+    }
   }
 }
