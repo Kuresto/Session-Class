@@ -22,7 +22,9 @@
  */
 namespace kuresto\Session;
 
-class Session
+use SessionHandler;
+
+class Session extends SessionHandler
 {
     protected $key;
     protected $name;
