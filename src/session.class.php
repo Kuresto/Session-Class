@@ -24,6 +24,10 @@ namespace kuresto\Session;
 
 class Session
 {
+    protected $key;
+    protected $name;
+    protected $cookie = [];
+
     /**
      * Constructor.
      */
