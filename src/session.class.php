@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace kuresto\Session;
+namespace Session;
 
 use SessionHandler;
 
@@ -34,28 +34,53 @@ class Session extends SessionHandler
 
     /**
      * Constructor.
+     *
+     * @param int $time
      */
-    public function __construct() {
-        if(session_id() == '')
+    public function __construct($time = 20) {
+        if(session_id() == '') {
             session_start();
+        }
+
+        $session_id     = $this->get('session_id');
+        $session_time   = $this->get('session_time');
+        $session_start  = $this->get('session_start');
+        if(!$session_id || !$session_start || !$session_time)
+            $this->register($time);
+
     }
 
+    /**
+     * @param null $key
+     * @param null $name
+     */
     public function secureSession($key = null, $name = null) {
 
         $this->isSecure = true;
 
-        if(!empty($key))
+        if(empty($key)) {
             $this->key = 'KnF5fRpMNUJ461NCoPpcUO7c9rNn060hVPmXIoVZ';
+        }
 
-        if(!empty($name))
+        if(empty($name)) {
             $this->name = "SecureSession";
+        }
 
-        $this->cookie += ['lifetime' => 0, 'path' => ini_get('session.cookie_path'), 'domain' => ini_get('session.cookie_domain'), 'secure' => isset($_SERVER['HTTPS']), 'httponly' => true];
+        $this->cookie = [
+            'lifetime' => 0,
+            'path'     => ini_get('session.cookie_path'),
+            'domain'   => ini_get('session.cookie_domain'),
+            'secure'   => isset($_SERVER['HTTPS']),
+            'httponly' => true
+        ];
 
         $this->secureSessionSetup();
 
     }
 
+    /**
+     *
+     */
     private function secureSessionSetup() {
         ini_set('session.use_cookies', 1);
         ini_set('session.use_only_cookies', 1);
@@ -94,6 +119,7 @@ class Session extends SessionHandler
      */
     public function __destruct() {
         unset($this);
+        
     }
 
     /**
@@ -115,7 +141,7 @@ class Session extends SessionHandler
     public function isRegistered() {
         if(!empty($_SESSION['session_id'])) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -160,7 +186,7 @@ class Session extends SessionHandler
 
             if(isset($result[$next])) {
                 $result = $result[$next];
-            }else {
+            } else {
                 return false;
             }
         }
@@ -194,7 +220,7 @@ class Session extends SessionHandler
     public function isExpired() {
         if($_SESSION['session_start'] < $this->timeNow()) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -247,10 +273,16 @@ class Session extends SessionHandler
         session_destroy();
     }
 
+    /**
+     *
+     */
     public function dump() {
         var_dump($this->getSession());
     }
 
+    /**
+     * @param bool $destroy
+     */
     public function regenerate($destroy = false) {
         session_regenerate_id($destroy);
     }
